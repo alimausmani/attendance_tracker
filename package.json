@@ -8,10 +8,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "express": "^4.21.0"
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.21.0",
+    "express-session": "^1.17.3",
+    "mongoose": "^7.3.2"
   }
 }
