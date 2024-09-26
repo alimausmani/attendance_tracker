@@ -2,3 +2,19 @@ node_modules
 
 
 
+- project/
+  - schmas/
+    - Class.js
+    - Student.js
+    - Teacher.js
+    - Admin.js
+    - Attendance.js
+  - routes/
+    - classRoutes.js
+    - studentRoutes.js
+    - teacherRoutes.js
+    - adminRoutes.js
+    - attendanceRoutes.js
+  - index.js
+  - .env
+  - package.json
