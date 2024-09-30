@@ -9,6 +9,7 @@ const classSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+  
     // Add other class-related fields as necessary
 });
 
