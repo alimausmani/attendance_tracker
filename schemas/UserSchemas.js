@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const { log } = require('util');
+import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 // User Schema (for Students, Teachers, and Admins)
@@ -38,54 +37,5 @@ const UserSchema = new Schema({
   ],
 });
 
-// Class Schema
-const ClassSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  students: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', // references User schema (students)
-    },
-  ],
-  teacher: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // references User schema (teacher)
-  },
-});
-
-// Attendance Schema
-const AttendanceSchema = new Schema({
-  student: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  class: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Class',
-    required: true,
-  },
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-  status: {
-    type: String,
-    enum: ['present', 'absent'],
-    required: true,
-  },
-});
-
-// Exporting the models
 const User = mongoose.model('User', UserSchema);
-const Class = mongoose.model('Class', ClassSchema);
-const Attendance = mongoose.model('Attendance', AttendanceSchema);
-
-module.exports = {
-  User,
-  Class,
-  Attendance,
-};
+export default User; // Use 'export default' for ES Module syntax
