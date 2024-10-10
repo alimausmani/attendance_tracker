@@ -1,25 +1,25 @@
 import express from 'express';
-import Class from '../schemas/ClassSchemas.js'; // Ensure this is the correct path
+import Class from '../schemas/ClassSchemas.js'; 
 
 const router = express.Router();
 
-// Route to create a new class
 router.post('/add', async (req, res) => {
-  const { name, teacherId, studentIds } = req.body;
+  const { name, description, time, teacherId, studentIds } = req.body;
 
   try {
     const newClass = new Class({
       name,
+      description, 
+      time,       
       teacher: teacherId,
-      students: studentIds, // array of student IDs
+      students: studentIds, 
     });
 
     await newClass.save();
     res.status(201).json({ message: 'Class created successfully', class: newClass });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create class', details: error });
+    res.status(500).json({ error: 'Failed to create class', details: error.message });
   }
 });
 
-// Other routes (get, update, delete)...
 export default router;
