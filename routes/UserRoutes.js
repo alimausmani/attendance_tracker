@@ -35,7 +35,7 @@ import User from '../schemas/UserSchemas.js'; // Make sure to use the correct ex
 const router = express.Router();
 
 // Route to create a new user (admin, teacher, student)
-router.post('/add', async (req, res) => {
+router.post('/signup', async (req, res) => {
   const { name, email, password, role, enrolledClasses, teachingClasses } = req.body;
 
   try {
