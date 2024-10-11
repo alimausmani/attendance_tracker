@@ -1,7 +1,7 @@
-import mongoose from 'mongoose'; // Ensure you're using ES6 import
+import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
-// Attendance Schema
+
 const AttendanceSchema = new Schema({
   student: {
     type: mongoose.Schema.Types.ObjectId,
@@ -25,4 +25,4 @@ const AttendanceSchema = new Schema({
 });
 
 const Attendance = mongoose.model('Attendance', AttendanceSchema);
-export default Attendance; // Use ES6 export syntax
+export default Attendance; 
