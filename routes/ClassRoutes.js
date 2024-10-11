@@ -22,4 +22,23 @@ router.post('/add', async (req, res) => {
   }
 });
 
+router.delete('/delete/:id', async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid class ID' });
+  }
+
+  try {
+    const deletedClass = await Class.findByIdAndDelete(id);
+
+    if (!deletedClass) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    res.status(200).json({ message: 'Class deleted successfully', class: deletedClass });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete class', details: error.message });
+  }
+});
 export default router;
