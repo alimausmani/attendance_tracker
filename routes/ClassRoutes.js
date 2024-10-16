@@ -1,25 +1,44 @@
 import express from 'express';
-import Class from '../schemas/ClassSchemas.js'; // Ensure this is the correct path
+import Class from '../schemas/ClassSchemas.js'; 
 
 const router = express.Router();
 
-// Route to create a new class
 router.post('/add', async (req, res) => {
-  const { name, teacherId, studentIds } = req.body;
+  const { name, description, time, teacherId, studentIds } = req.body;
 
   try {
     const newClass = new Class({
       name,
+      description, 
+      time,       
       teacher: teacherId,
-      students: studentIds, // array of student IDs
+      students: studentIds, 
     });
 
     await newClass.save();
     res.status(201).json({ message: 'Class created successfully', class: newClass });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create class', details: error });
+    res.status(500).json({ error: 'Failed to create class', details: error.message });
   }
 });
 
-// Other routes (get, update, delete)...
+router.delete('/delete/:id', async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid class ID' });
+  }
+
+  try {
+    const deletedClass = await Class.findByIdAndDelete(id);
+
+    if (!deletedClass) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    res.status(200).json({ message: 'Class deleted successfully', class: deletedClass });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete class', details: error.message });
+  }
+});
 export default router;

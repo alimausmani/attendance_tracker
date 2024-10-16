@@ -3,7 +3,6 @@ import Attendance from '../schemas/AttendanceSchemas.js';
 
 const router = express.Router();
 
-// Route to add attendance
 router.post('/add', async (req, res) => {
   const { studentId, classId, status } = req.body;
 
@@ -21,34 +20,32 @@ router.post('/add', async (req, res) => {
   }
 });
 
-// Route to get attendance for a specific class
 router.get('/class/:classId', async (req, res) => {
   const { classId } = req.params;
 
   try {
     const attendance = await Attendance.find({ class: classId })
-      .populate('student', 'name') // Populate student name
-      .populate('class', 'name'); // Populate class name if needed
+      .populate('student', 'name') 
+      .populate('class', 'name'); 
     res.status(200).json(attendance);
   } catch (error) {
     res.status(500).json({ error: 'Failed to get attendance for the class', details: error });
   }
 });
 
-// Route to get attendance for a specific student
 router.get('/student/:studentId', async (req, res) => {
   const { studentId } = req.params;
 
   try {
     const attendance = await Attendance.find({ student: studentId })
-      .populate('class', 'name'); // Populate class name
+      .populate('class', 'name'); 
     res.status(200).json(attendance);
   } catch (error) {
     res.status(500).json({ error: 'Failed to get attendance for the student', details: error });
   }
 });
 
-// Route to update attendance status
+
 router.put('/update/:attendanceId', async (req, res) => {
   const { attendanceId } = req.params;
   const { status } = req.body;
@@ -68,7 +65,7 @@ router.put('/update/:attendanceId', async (req, res) => {
   }
 });
 
-// Route to delete attendance record
+
 router.delete('/delete/:attendanceId', async (req, res) => {
   const { attendanceId } = req.params;
 
