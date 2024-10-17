@@ -1,5 +1,21 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
+
+const StudentSchema = new Schema({
+  studentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', 
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  }
+});
+
 const ClassSchema = new Schema({
   name: {
     type: String,
@@ -10,15 +26,10 @@ const ClassSchema = new Schema({
     required: true,
   },
   time: {
-    type: String, 
+    type: String,
     required: true,
   },
-  students: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', 
-    },
-  ],
+  students: [StudentSchema], 
   teacher: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User', 
@@ -26,4 +37,4 @@ const ClassSchema = new Schema({
 });
 
 const Class = mongoose.model('Class', ClassSchema);
-export default Class; 
+export default Class;
