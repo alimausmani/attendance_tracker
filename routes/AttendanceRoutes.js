@@ -3,15 +3,28 @@ import Attendance from '../schemas/AttendanceSchemas.js';
 
 const router = express.Router();
 
-router.post('/add', async (req, res) => {
-  const { studentId, classId, status } = req.body;
+router.post('/add/:classId', async (req, res) => {
+  const { studentId, date } = req.body; 
+  const { classId } = req.params; 
 
   try {
-    const attendance = new Attendance({
-      student: studentId,
+    let attendance = await Attendance.findOne({
       class: classId,
-      status: status,
+      date: date || new Date().toISOString().split('T')[0], 
+      "students.studentId": studentId,
     });
+
+    if (attendance) {
+      return res.status(400).json({ message: 'Attendance for this student on the given date already exists.' });
+    }
+
+    if (!attendance) {
+      attendance = new Attendance({
+        class: classId,
+        date: date || new Date().toISOString().split('T')[0],
+        students: [{ studentId }]
+      });
+    }
 
     await attendance.save();
     res.status(201).json({ message: 'Attendance added successfully', attendance });
@@ -19,6 +32,7 @@ router.post('/add', async (req, res) => {
     res.status(500).json({ error: 'Failed to add attendance', details: error });
   }
 });
+
 
 router.get('/class/:classId', async (req, res) => {
   const { classId } = req.params;
