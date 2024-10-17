@@ -14,7 +14,7 @@ const AttendanceSchema = new Schema({
         enum: ['present','absent'], 
         default: 'absent', 
       },
-    },
+    }
   ],
   class: {
     type: mongoose.Schema.Types.ObjectId,
