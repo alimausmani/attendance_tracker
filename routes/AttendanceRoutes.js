@@ -64,7 +64,7 @@ router.put('/update/:attendanceId', async (req, res) => {
     }
     res.status(200).json({ message: 'Attendance status updated', attendance });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update attendance', details: error });
+    res.status(500).json({ error: 'Failed to update attendance', details: error })
   }
 });
 
