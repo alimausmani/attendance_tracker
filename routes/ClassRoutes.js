@@ -45,7 +45,7 @@ router.delete('/delete/:id', async (req, res) => {
 
     res.status(200).json({ message: 'Class deleted successfully', class: deletedClass });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete class', details: error.message });
+    res.status(500).json({ error: 'Failed to delete class', details: error.message })
   }
 });
 export default router;
