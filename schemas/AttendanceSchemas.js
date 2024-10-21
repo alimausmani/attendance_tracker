@@ -11,10 +11,10 @@ const AttendanceSchema = new Schema({
       },
       status: {
         type: String,
-        enum: ['present'], 
-        default: 'present', 
+        enum: ['present','absent'], 
+        default: 'absent', 
       },
-    },
+    }
   ],
   class: {
     type: mongoose.Schema.Types.ObjectId,
