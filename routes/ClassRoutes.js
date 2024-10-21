@@ -1,23 +1,41 @@
+
 import express from 'express';
-import Class from '../schemas/ClassSchemas.js'; 
+import mongoose from 'mongoose';
+import Class from '../schemas/ClassSchemas.js';  
 
 const router = express.Router();
 
 router.post('/add', async (req, res) => {
-  const { name, description, time, teacherId, studentIds } = req.body;
+  const { name, description, time, teacherId, students } = req.body;
 
   try {
+    
+    const teacherObjectId = new mongoose.Types.ObjectId(teacherId);
+
     const newClass = new Class({
       name,
-      description, 
-      time,       
-      teacher: teacherId,
-      students: studentIds, 
+      description,
+      time,
+      teacher: teacherObjectId,
+      students,  
     });
 
-    await newClass.save();
-    res.status(201).json({ message: 'Class created successfully', class: newClass });
+    const savedClass = await newClass.save();
+
+    res.status(201).json({
+      message: 'Class created successfully',
+      class: {
+        name: savedClass.name,
+        description: savedClass.description,
+        time: savedClass.time,
+        students: savedClass.students.map(student => student.toString()), 
+        teacher: savedClass.teacher.toString(),  
+        _id: savedClass._id.toString(),  
+        __v: savedClass.__v
+      }
+    });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Failed to create class', details: error.message });
   }
 });
@@ -41,4 +59,5 @@ router.delete('/delete/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete class', details: error.message });
   }
 });
+
 export default router;
