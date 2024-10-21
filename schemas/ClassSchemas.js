@@ -1,21 +1,6 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
-const StudentSchema = new Schema({
-  studentId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', 
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-  }
-});
-
 const ClassSchema = new Schema({
   name: {
     type: String,
@@ -29,10 +14,15 @@ const ClassSchema = new Schema({
     type: String,
     required: true,
   },
-  students: [StudentSchema], 
+  students: [{
+    type: mongoose.Schema.Types.ObjectId,  
+    ref: 'User',
+    required: true,
+  }],
   teacher: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', 
+    ref: 'User',
+    required: true,
   },
 });
 
