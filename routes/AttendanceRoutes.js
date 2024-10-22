@@ -3,37 +3,49 @@ import Attendance from '../schemas/AttendanceSchemas.js';
 
 const router = express.Router();
 router.post('/add/:classId', async (req, res) => {
-  const { studentId, date, status } = req.body; 
-  const { classId } = req.params; 
+  const { students } = req.body; 
+  const { classId } = req.params;
 
   try {
+    const attendanceDate = new Date().toISOString().split('T')[0];
+
     let attendance = await Attendance.findOne({
       class: classId,
-      date: date || new Date().toISOString().split('T')[0], 
-      "students.studentId": studentId,
+      date: attendanceDate,
     });
 
-    if (attendance) {
-      return res.status(400).json({ message: 'Attendance for this student on the given date already exists.' });
-    }
     if (!attendance) {
       attendance = new Attendance({
         class: classId,
-        date: date || new Date().toISOString().split('T')[0],
-        students: [
-          {
-            studentId,
-            status: status || 'absent', 
-          }
-        ],
+        date: attendanceDate,
+        students: [],
       });
     }
+
+    students.forEach(({ studentId, status }) => {
+      const existingStudent = attendance.students.find(
+        (student) => student.studentId === studentId
+      );
+
+      if (existingStudent) {
+        existingStudent.status = status || 'absent';
+      } else {
+        attendance.students.push({
+          studentId,
+          status: status || 'absent',
+        });
+      }
+    });
+
     await attendance.save();
+
     res.status(201).json({ message: 'Attendance added successfully', attendance });
   } catch (error) {
     res.status(500).json({ error: 'Failed to add attendance', details: error });
   }
 });
+
+
 
 router.get('/class/:classId', async (req, res) => {
   const { classId } = req.params;
