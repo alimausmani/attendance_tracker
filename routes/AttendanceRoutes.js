@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Attendance from '../schemas/AttendanceSchemas.js';
 
 const router = express.Router();
@@ -6,36 +7,53 @@ router.post('/add/:classId', async (req, res) => {
   const { students } = req.body; 
   const { classId } = req.params;
 
+  const trimmedClassId = classId.trim();
+
   try {
     const attendanceDate = new Date().toISOString().split('T')[0];
 
     let attendance = await Attendance.findOne({
-      class: classId,
+      class: trimmedClassId,
       date: attendanceDate,
     });
 
+    // if (!attendance) {
+    //   attendance = new Attendance({
+    //     class: trimmedClassId,
+    //     date: attendanceDate,
+    //     students: [],
+    //   });
+    // }
+
+    const newStudents = students.map((studentId) => {
+      const existingStudent = attendance.students.find(
+        (student) => student.studentId === studentId
+      );
+
+
+      if (existingStudent) {
+        return null;
+      }
+
+      return {
+        studentId: studentId, 
+        status: 'present',
+      };
+      
+    });
+
+
     if (!attendance) {
       attendance = new Attendance({
-        class: classId,
+        class: trimmedClassId,
         date: attendanceDate,
         students: [],
       });
     }
 
-    students.forEach(({ studentId, status }) => {
-      const existingStudent = attendance.students.find(
-        (student) => student.studentId === studentId
-      );
 
-      if (existingStudent) {
-        existingStudent.status = status || 'absent';
-      } else {
-        attendance.students.push({
-          studentId,
-          status: status || 'absent',
-        });
-      }
-    });
+
+    attendance.students.push(...newStudents.filter(Boolean));
 
     await attendance.save();
 
@@ -44,7 +62,6 @@ router.post('/add/:classId', async (req, res) => {
     res.status(500).json({ error: 'Failed to add attendance', details: error });
   }
 });
-
 
 
 router.get('/class/:classId', async (req, res) => {
