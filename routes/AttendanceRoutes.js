@@ -17,13 +17,6 @@ router.post('/add/:classId', async (req, res) => {
       date: attendanceDate,
     });
 
-    // if (!attendance) {
-    //   attendance = new Attendance({
-    //     class: trimmedClassId,
-    //     date: attendanceDate,
-    //     students: [],
-    //   });
-    // }
 
     const newStudents = students.map((studentId) => {
       const existingStudent = attendance.students.find(
