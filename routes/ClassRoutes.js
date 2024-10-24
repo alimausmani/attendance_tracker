@@ -40,47 +40,84 @@ router.post('/add', async (req, res) => {
   }
 });
 
-// router.put('/update/:id', async (req, res) => {
-//   const { id } = req.params;
-//   const { name, description, time, teacherId, students } = req.body;
 
-//   if (!mongoose.Types.ObjectId.isValid(id)) {
-//     return res.status(400).json({ message: 'Invalid class ID' });
-//   }
-
+// router.get('/teacher/classes', async (req, res) => {
 //   try {
-//     if (!mongoose.Types.ObjectId.isValid(teacherId)) {
-//       return res.status(400).json({ message: 'Invalid teacher ID' });
-//     }
-//     const teacherObjectId = new mongoose.Types.ObjectId(teacherId);
+//       const classes = await Class.find()
+//           .populate('teacher')
+//           // .populate('students');
 
-//     const studentArray = students.map(student => ({
-//       ...student,
-//       studentId: new mongoose.Types.ObjectId(student.studentId),
-//     }));
+//       // Log the fetched classes
+//       console.log('Fetched classes:', classes);
 
-//     const updatedClass = await Class.findByIdAndUpdate(
-//       id,
-//       {
-//         name,
-//         description,
-//         time,
-//         teacher: teacherObjectId,
-//         students: studentArray,
-//       },
-//       { new: true, runValidators: true }  
-//     );
+//       const groupedClasses = classes.reduce((acc, currentClass) => {
+//           if (!currentClass.teacher) {
+//               console.warn('Teacher not found for class:', currentClass);
+//               return acc; // Skip if teacher is not found
+//           }
 
-//     if (!updatedClass) {
-//       return res.status(404).json({ message: 'Class not found' });
-//     }
+//           const teacherId = currentClass.teacher._id.toString();
+//           if (!acc[teacherId]) {
+//               acc[teacherId] = {
+//                   teacher: currentClass.teacher.name,
+//                   classes: []
+//               };
+//           }
 
-//     res.status(200).json({ message: 'Class updated successfully', class: updatedClass });
+//           acc[teacherId].classes.push({
+//               _id: currentClass._id,
+//               name: currentClass.name,
+//               description: currentClass.description,
+//               time: currentClass.time
+//           });
+//           return acc;
+//       }, {});
+
+//       res.status(200).json(groupedClasses);
 //   } catch (error) {
-//     console.error('Error updating class:', error);
-//     res.status(500).json({ error: 'Failed to update class', details: error.message });
+//       console.error('Error fetching classes by teacher:', error);
+//       res.status(500).json({ error: 'Failed to fetch classes', details: error.message });
 //   }
 // });
+router.get('/teacher/classes', async (req, res) => {
+  try {
+      const classes = await Class.find()
+          .populate('teacher', 'name')
+          .populate('students', 'name'); // Optional: Populate students' names
+
+      // Log the fetched classes
+      console.log('Fetched classes:', classes);
+
+      const groupedClasses = classes.reduce((acc, currentClass) => {
+          if (!currentClass.teacher) {
+              console.warn('Teacher not found for class:', currentClass);
+              return acc; // Skip if teacher is not found
+          }
+
+          const teacherId = currentClass.teacher._id.toString();
+          if (!acc[teacherId]) {
+              acc[teacherId] = {
+                  teacher: currentClass.teacher.name,
+                  classes: []
+              };
+          }
+
+          acc[teacherId].classes.push({
+              _id: currentClass._id,
+              name: currentClass.name,
+              description: currentClass.description,
+              time: currentClass.time
+          });
+          return acc;
+      }, {});
+
+      res.status(200).json(groupedClasses);
+  } catch (error) {
+      console.error('Error fetching classes by teacher:', error);
+      res.status(500).json({ error: 'Failed to fetch classes', details: error.message });
+  }
+});
+
 
 
  
