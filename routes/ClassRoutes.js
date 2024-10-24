@@ -145,8 +145,8 @@ router.put('/update/:id', async (req, res) => {
     }
 
     if (studentCount !== undefined) {
-      if (typeof studentCount !== 'number' || studentCount < 0) {
-        return res.status(400).json({ message: 'Invalid student count' });
+      if (!Array.isArray(studentCount) || studentCount.some(count => typeof count !== 'number' || count < 0)) {
+        return res.status(400).json({ message: 'Invalid student count array' });
       }
       updateFields.studentCount = studentCount; 
     }
@@ -171,6 +171,7 @@ router.put('/update/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to update class', details: error.message });
   }
 });
+
 
 
 
