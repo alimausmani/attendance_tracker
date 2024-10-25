@@ -1,24 +1,61 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Attendance from '../schemas/AttendanceSchemas.js';
 
 const router = express.Router();
+router.post('/add/:classId', async (req, res) => {
+  const { students } = req.body; 
+  const { classId } = req.params;
 
-router.post('/add', async (req, res) => {
-  const { studentId, classId, status } = req.body;
+  const trimmedClassId = classId.trim();
 
   try {
-    const attendance = new Attendance({
-      student: studentId,
-      class: classId,
-      status: status,
+    const attendanceDate = new Date().toISOString().split('T')[0];
+
+    let attendance = await Attendance.findOne({
+      class: trimmedClassId,
+      date: attendanceDate,
     });
 
+
+    const newStudents = students.map((studentId) => {
+      const existingStudent = attendance.students.find(
+        (student) => student.studentId === studentId
+      );
+
+
+      if (existingStudent) {
+        return null;
+      }
+
+      return {
+        studentId: studentId, 
+        status: 'present',
+      };
+      
+    });
+
+
+    if (!attendance) {
+      attendance = new Attendance({
+        class: trimmedClassId,
+        date: attendanceDate,
+        students: [],
+      });
+    }
+
+
+
+    attendance.students.push(...newStudents.filter(Boolean));
+
     await attendance.save();
+
     res.status(201).json({ message: 'Attendance added successfully', attendance });
   } catch (error) {
     res.status(500).json({ error: 'Failed to add attendance', details: error });
   }
 });
+
 
 router.get('/class/:classId', async (req, res) => {
   const { classId } = req.params;
