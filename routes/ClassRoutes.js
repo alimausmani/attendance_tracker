@@ -41,44 +41,6 @@ router.post('/add', async (req, res) => {
 });
 
 
-// router.get('/teacher/classes', async (req, res) => {
-//   try {
-//       const classes = await Class.find()
-//           .populate('teacher')
-//           // .populate('students');
-
-//       // Log the fetched classes
-//       console.log('Fetched classes:', classes);
-
-//       const groupedClasses = classes.reduce((acc, currentClass) => {
-//           if (!currentClass.teacher) {
-//               console.warn('Teacher not found for class:', currentClass);
-//               return acc; // Skip if teacher is not found
-//           }
-
-//           const teacherId = currentClass.teacher._id.toString();
-//           if (!acc[teacherId]) {
-//               acc[teacherId] = {
-//                   teacher: currentClass.teacher.name,
-//                   classes: []
-//               };
-//           }
-
-//           acc[teacherId].classes.push({
-//               _id: currentClass._id,
-//               name: currentClass.name,
-//               description: currentClass.description,
-//               time: currentClass.time
-//           });
-//           return acc;
-//       }, {});
-
-//       res.status(200).json(groupedClasses);
-//   } catch (error) {
-//       console.error('Error fetching classes by teacher:', error);
-//       res.status(500).json({ error: 'Failed to fetch classes', details: error.message });
-//   }
-// });
 router.get('/teacher/classes', async (req, res) => {
   try {
       const classes = await Class.find()
@@ -117,6 +79,8 @@ router.get('/teacher/classes', async (req, res) => {
       res.status(500).json({ error: 'Failed to fetch classes', details: error.message });
   }
 });
+
+
 
 
 router.put('/update/:id', async (req, res) => {
