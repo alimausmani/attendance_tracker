@@ -45,15 +45,14 @@ router.get('/teacher/classes', async (req, res) => {
   try {
       const classes = await Class.find()
           .populate('teacher', 'name')
-          .populate('students', 'name'); // Optional: Populate students' names
+          .populate('students', 'name'); 
 
-      // Log the fetched classes
       console.log('Fetched classes:', classes);
 
       const groupedClasses = classes.reduce((acc, currentClass) => {
           if (!currentClass.teacher) {
               console.warn('Teacher not found for class:', currentClass);
-              return acc; // Skip if teacher is not found
+              return acc; 
           }
 
           const teacherId = currentClass.teacher._id.toString();
