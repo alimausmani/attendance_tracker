@@ -5,6 +5,29 @@ import Class from '../schemas/ClassSchemas.js';
 
 const router = express.Router();
 
+
+
+router.get('/all', async (req, res) => {
+  console.log("In valid route");
+  try {
+    const classes = await Class.find()
+      .populate('teacher', 'name')
+      .populate('students', 'name');
+
+    console.log("Fetched classes:", classes);
+
+    if (!classes.length) {
+      console.warn('No classes found');
+      return res.status(200).json([]); 
+    }
+
+    res.status(200).json(classes);
+  } catch (error) {
+    console.error('Error fetching all classes:', error);
+    res.status(500).json({ error: 'Failed to fetch all classes', details: error.message });
+  }
+});
+
 router.post('/add', async (req, res) => {
   const { name, description, time, teacherId, students } = req.body;
 
