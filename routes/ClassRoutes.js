@@ -80,11 +80,9 @@ router.get('/teacher/classes', async (req, res) => {
 });
 
 
-
-
 router.put('/update/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, description, time, teacherId, students } = req.body;
+  const { name, description, time, teacherId, studentCount } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: 'Invalid class ID' });
@@ -92,6 +90,7 @@ router.put('/update/:id', async (req, res) => {
 
   try {
     const updateFields = {}; 
+
     if (name) updateFields.name = name;
     if (description) updateFields.description = description;
     if (time) updateFields.time = time;
@@ -103,13 +102,13 @@ router.put('/update/:id', async (req, res) => {
       updateFields.teacher = new mongoose.Types.ObjectId(teacherId);
     }
 
-    if (students && Array.isArray(students)) {
-      const studentArray = students.map(student => ({
-        ...student,
-        studentId: new mongoose.Types.ObjectId(student.studentId),
-      }));
-      updateFields.students = studentArray;
+    if (studentCount !== undefined) {
+      if (typeof studentCount !== 'number' || studentCount < 0) {
+        return res.status(400).json({ message: 'Invalid student count' });
+      }
+      updateFields.studentCount = studentCount; 
     }
+
     if (Object.keys(updateFields).length === 0) {
       return res.status(400).json({ message: 'No valid fields provided for update' });
     }
@@ -117,7 +116,7 @@ router.put('/update/:id', async (req, res) => {
     const updatedClass = await Class.findByIdAndUpdate(
       id,
       { $set: updateFields }, 
-      { new: true, runValidators: true }
+      { new: true, runValidators: true } 
     );
 
     if (!updatedClass) {
@@ -130,6 +129,7 @@ router.put('/update/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to update class', details: error.message });
   }
 });
+
 
 
 router.delete('/delete/:id', async (req, res) => {
