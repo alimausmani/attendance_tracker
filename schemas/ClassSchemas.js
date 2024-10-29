@@ -24,10 +24,10 @@ const ClassSchema = new Schema({
     ref: 'User',
     required: true,
   },
-  studentCount: {
-    type: [Number], 
-    default: [], 
-  },
+  // studentCount: {
+  //   type: [Number], 
+  //   default: [], 
+  // },
 });
 
 const Class = mongoose.model('Class', ClassSchema);
