@@ -95,6 +95,7 @@ router.post('/add/:classId', async (req, res) => {
 });
 
 
+
 router.get('/class/:classId', async (req, res) => {
   const { classId } = req.params;
 
