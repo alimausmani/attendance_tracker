@@ -315,7 +315,7 @@ router.get('/teacher/classes', verifyToken, async (req, res) => {
 // Update a class
 router.put('/update/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
-  const { name, description, time, teacherId, studentCount } = req.body;
+  const { name, description, time, teacherId, students } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: 'Invalid class ID' });
@@ -335,11 +335,19 @@ router.put('/update/:id', verifyToken, async (req, res) => {
       updateFields.teacher = new mongoose.Types.ObjectId(teacherId);
     }
 
-    if (studentCount !== undefined) {
-      if (typeof studentCount !== 'number' || studentCount < 0) {
-        return res.status(400).json({ message: 'Invalid student count' });
+    if (students) {
+      if (!Array.isArray(students.add) || !Array.isArray(students.remove)) {
+        return res.status(400).json({ message: 'Invalid students data' });
       }
-      updateFields.studentCount = studentCount; 
+
+      if (students.add.length > 0) {
+        updateFields.$addToSet = { students: { $each: students.add } };
+      }
+
+
+      if (students.remove.length > 0) {
+        updateFields.$pull = { students: { $in: students.remove } };
+      }
     }
 
     if (Object.keys(updateFields).length === 0) {
@@ -348,8 +356,8 @@ router.put('/update/:id', verifyToken, async (req, res) => {
 
     const updatedClass = await Class.findByIdAndUpdate(
       id,
-      { $set: updateFields }, 
-      { new: true, runValidators: true } 
+      updateFields, 
+      { new: true, runValidators: true }
     );
 
     if (!updatedClass) {
@@ -362,6 +370,7 @@ router.put('/update/:id', verifyToken, async (req, res) => {
     res.status(500).json({ error: 'Failed to update class', details: error.message });
   }
 });
+
 
 // Delete a class
 router.delete('/delete/:id', verifyToken, async (req, res) => {
